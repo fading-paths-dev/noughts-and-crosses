@@ -18,7 +18,7 @@ squares = [[-3, -2, -1, 0, 1, 2, 3],
            [-3, -2, -1, 0, 1, 2, 3]]
 
 
-class game_variables:
+class GameVariables:
 
     def __init__(self, elements, current_player, player1, player2, next_shape, board_full):
         self.elements = elements
@@ -29,16 +29,14 @@ class game_variables:
         self.boardFull = board_full
 
 
-def getGridElements():
-    return game_variables.elements
+def get_grid_elements():
+    return GameVariables.elements
 
 
-# make the number of grid elements a public variable with get/set to be used throughout
-
-def drawGrid():
-    elements = getGridElements()
+def draw_grid():
+    elements = get_grid_elements()
     # insure elements is odd
-    elements |= 1;
+    elements |= 1
     # calc spacing between lines
     segment = 600 / elements
     tur.penup()
@@ -83,9 +81,9 @@ def drawGrid():
         tur.fd(600)
 
 
-def drawNought(x, y):
+def draw_nought(x, y):
     tur.onscreenclick(wait)
-    elements = getGridElements()
+    elements = get_grid_elements()
     # scale size of symbol to fit grid
     radius = 600 / elements
     radius *= 0.33
@@ -99,9 +97,9 @@ def drawNought(x, y):
     tur.onscreenclick(move)
 
 
-def drawCross(x, y):
+def draw_cross(x, y):
     tur.onscreenclick(wait)
-    elements = getGridElements()
+    elements = get_grid_elements()
     # scale size of symbol to fit grid
     radius = 600 / elements
     radius *= 0.33
@@ -114,7 +112,7 @@ def drawCross(x, y):
     tur.onscreenclick(move)
 
 
-def initElements():
+def init_elements():
     for var in range(7):
         squares[-3][var] = GridElement(' ', 500, 500)
         squares[-2][var] = GridElement(' ', 500, 500)
@@ -125,7 +123,7 @@ def initElements():
         squares[3][var] = GridElement(' ', 500, 500)
 
 
-def initCentres(elements):
+def init_centres(elements):
     radius = 600 / elements
     offset = int((elements - 1) / 2)
     for var in range(elements):
@@ -146,33 +144,33 @@ def initCentres(elements):
         squares[var - offset][3].centreY = radius * 3
 
 
-def getGridPositionX(x):
-    elements = getGridElements();
+def get_grid_position_x(x):
+    elements = get_grid_elements();
     radius = 600 / elements
     offset = int((elements - 1) / 2)
-    if (x < -300):
+    if x < -300:
         return 100  # error
     else:
         for var in range(elements):
-            if (x < (radius * (var - offset + 0.5))):
+            if x < (radius * (var - offset + 0.5)):
                 return var - offset
         return 200  # error
 
 
 def getGrisPositionY(y):
-    elements = getGridElements();
+    elements = get_grid_elements();
     radius = 600 / elements
     offset = int((elements - 1) / 2)
-    if (y < -300.0):
+    if y < -300.0:
         return 100  # error
     else:
         for var in range(elements):
-            if (y < (radius * (var - offset + 0.5))):
+            if y < (radius * (var - offset + 0.5)):
                 return var - offset
         return 200
 
 
-def checkWinThree(lastShape):
+def check_win_three(lastShape):
     if ((squares[-1][-1].shape == lastShape and squares[-1][0].shape == lastShape and squares[-1][
         1].shape == lastShape) or
             (squares[0][-1].shape == lastShape and squares[0][0].shape == lastShape and squares[0][
@@ -195,10 +193,10 @@ def checkWinThree(lastShape):
 
 
 # 0 = win, 1 = draw, 2 = else
-def checkWinComplicated(elements, lastShape):
+def check_win_complicated(elements, lastShape):
     offset = int((elements - 1) / 2)
     count = 0
-    # colums
+    # columns
     for var in range(elements):
         for ret in range(elements):
             if (squares[var - offset][ret - offset].shape == lastShape):
@@ -238,14 +236,14 @@ def checkWinComplicated(elements, lastShape):
 
 # 0 = win, 1 = draw, 2 = else
 # last shape is the opposite to the one passed in
-def checkWin(elements, lastShape):
+def check_win(elements, lastShape):
     print("checkWin", elements, lastShape)
     boundary = elements * elements
-    if (game_variables.boardFull < boundary):
+    if (GameVariables.boardFull < boundary):
         if (lastShape == 'X'):
-            return checkWinComplicated(elements, 'O')
+            return check_win_complicated(elements, 'O')
         else:
-            return checkWinComplicated(elements, 'X')
+            return check_win_complicated(elements, 'X')
     else:
         return 1
 
@@ -255,43 +253,43 @@ def wait(x, y):
 
 
 def move(x, y):
-    X = getGridPositionX(x)
+    X = get_grid_position_x(x)
     Y = getGrisPositionY(y)
     print(x, y)
     print(X, Y);
-    if (X == 100 or Y == 100 or X == 200 or Y == 200):
+    if X == 100 or Y == 100 or X == 200 or Y == 200:
         print("Select another spot")
-    elif (squares[X][Y].shape == 'O'):
-        if (game_variables.nextShape == 'O'):
+    elif squares[X][Y].shape == 'O':
+        if GameVariables.nextShape == 'O':
             print("You've already gone there")
         else:
             print("No Cheating!")
-    elif (squares[X][Y].shape == 'X'):
-        if (game_variables.nextShape == 'X'):
+    elif squares[X][Y].shape == 'X':
+        if GameVariables.nextShape == 'X':
             print("You've already gone there")
         else:
             print("No Cheating!")
     else:
-        game_variables.boardFull = game_variables.boardFull + 1
-        if (game_variables.nextShape == 'X'):
-            drawCross(squares[X][Y].centreX, squares[X][Y].centreY)
+        GameVariables.boardFull = GameVariables.boardFull + 1
+        if GameVariables.nextShape == 'X':
+            draw_cross(squares[X][Y].centreX, squares[X][Y].centreY)
             squares[X][Y].shape = 'X'
-            game_variables.nextShape = 'O'
+            GameVariables.nextShape = 'O'
         else:
-            drawNought(squares[X][Y].centreX, squares[X][Y].centreY)
-            game_variables.nextShape = 'X'
+            draw_nought(squares[X][Y].centreX, squares[X][Y].centreY)
+            GameVariables.nextShape = 'X'
             squares[X][Y].shape = 'O'
 
         # set up next player only if the selection was valid
-        if (game_variables.currentPlayer == 1):
-            game_variables.currentPlayer = 0
-            nextplayer = game_variables.player1
+        if GameVariables.currentPlayer == 1:
+            GameVariables.currentPlayer = 0
+            nextplayer = GameVariables.player1
         else:
-            game_variables.currentPlayer = 1
-            nextplayer = game_variables.player2
+            GameVariables.currentPlayer = 1
+            nextplayer = GameVariables.player2
 
         # is it human or AI
-        if (nextplayer == 'H'):
+        if nextplayer == 'H':
             # set up next input to be from mouse click
             tur.onscreenclick(move)
         else:
@@ -303,16 +301,16 @@ def move(x, y):
             tur.onscreenclick(wait)
 
         # check for win condition if the selection was valid
-        result = checkWin(game_variables.elements, game_variables.nextShape)
+        result = check_win(GameVariables.elements, GameVariables.nextShape)
         print("result = ", result)
-        if (result == 0):
-            if (game_variables.currentPlayer == 1):
+        if result == 0:
+            if GameVariables.currentPlayer == 1:
                 print("Player 2 Wins!")
                 tur.onscreenclick(wait)
             else:
                 print("Player 1 Wins!")
                 tur.onscreenclick(wait)
         # else if board full
-        elif (result == 1):
+        elif result == 1:
             print("Its a draw")
             tur.onscreenclick(wait)
